@@ -1,30 +1,13 @@
-name: Website
-
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-
+name: learn-github-actions
+run-name: ${{ github.actor }} is learning GitHub Actions
+on: [push]
 jobs:
-  deploy:
-    name: Build and Deploy
+  check-bats-version:
     runs-on: ubuntu-latest
     steps:
-      - name: 🛒 Checkout
-        uses: actions/checkout@v3
-      - name: ✨ Setup Hugo
-        env:
-          HUGO_VERSION: 0.100.1
-        run: |
-          mkdir ~/hugo
-          cd ~/hugo
-          curl -L "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz" --output hugo.tar.gz
-          tar -xvzf hugo.tar.gz
-          sudo mv hugo /usr/local/bin          
-      - name: 🛠️ Build
-        run: hugo
-      - name: 🔐 Create Key File
-        run: install -m 600 -D /dev/null ~/.ssh/id_rsa
-      - name: 🔑 Populate Key
-        run: echo "${{ secrets.PRIVATE_SSH_KEY }}" > ~/.ssh/id_rsa
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
